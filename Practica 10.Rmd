@@ -1,30 +1,103 @@
 ---
-title: "Practica 10"
+title: "Practica 6 "
 author: "Oswaldo Rodriguez"
-date: '2022-03-29'
-output: html_document
+date: "15-Marzo-2022"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: false
+    number_sections: true
+    theme: united 
+    highlight: tango
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Practica 10
+```{r}
+#PRACTICA 10
+library(tidyverse)
+library(dplyr)
+datos<-read.csv("mexico_covid19.csv",header = TRUE)
+# a) Primeros 6 regstros
+head(datos)
+# b) Dimensiones
+dim(datos)
+object.size(datos)
+# c) Cambiar variable a categorica
+str(datos)
+datos$SEXO<-as.character(datos$SEXO)
+str(datos)
+# Reemplazar valores categoricos
+data2<-mutate(datos,SEXO = ifelse(SEXO == "1", "MUJER",
+                        ifelse(SEXO == "2", "HOMBRE", "NO_ESPECIFICADO")))
+
+# d) Resumen
+fe<-select(data2,ENTIDAD,RESULTADO,SEXO)
+fe$ENTIDAD<-as.character(fe$ENTIDAD)
+fe<-group_by(fe,SEXO)
+
+res<-table(fe$ENTIDAD,fe$RESULTADO,fe$SEXO)                   
+res
+# e) Grafica
+barplot(margin.table(res,1),
+        main = "Casos por entidad",
+        xlab = "Entidades", ylab = "Número de caso", horiz = FALSE,
+        col = "blue")
+# f) Modificar la variable sector
+
+datos$SECTOR<-as.character(datos$SECTOR)
+
+#  Parecido al inciso c) 
+data2<-mutate(datos,SECTOR = ifelse(SECTOR == "1", "CRUZ_ROJA",
+                             ifelse(SECTOR == "2", "DIF", 
+                                    ifelse(SECTOR == "2", "DIF", 
+                                           ifelse(SECTOR == "2", "DIF", 
+                                                  ifelse(SECTOR == "3", "ESTATAL", 
+                                                         ifelse(SECTOR == "4", "ESTATAL", 
+                                                                ifelse(SECTOR == "5", "IMSS_BIENESTAR",  
+                                                                       ifelse(SECTOR == "6", "ISSSTE", 
+                                                                              ifelse(SECTOR == "7", "MUNICIPAL", 
+                                                                                     ifelse(SECTOR == "8", "PEMEX", 
+                                                                                            ifelse(SECTOR == "9", "PRIVADA", 
+                                                                                                   ifelse(SECTOR == "10", "SEDENA", 
+                                                                                                          ifelse(SECTOR == "11", "SEMAR", 
+                                                                                                                 ifelse(SECTOR == "12", "SSA", 
+                                                                                                                        ifelse(SECTOR == "13", "UNIVERSITARIO", "NO_ESPECIFICADO"))))))))))))))))
+
+# g) grafico
+
+oax <- select(data2, SECTOR,RESULTADO)
+
+oax<-as.data.frame(table(oax$SECTOR,oax$RESULTADO))
+
+
+oax
+ggplot(data = oax)+
+  aes(x=Var1, y = Freq) + 
+  geom_bar(stat="identity")
+
+# h) filtrar casos positivos de oaxava
+oax<-select(datos,ENTIDAD,RESULTADO,OBESIDAD,ASMA,HIPERTENSION,RENAL_CRONICA)
+oax$ENTIDAD<-as.character(oax$ENTIDAD)
+oax_pos<-filter(oax,
+                ENTIDAD =="Oaxaca"&
+                RESULTADO == 1)
+oax_pos<-filter(oax_pos,OBESIDAD,ASMA,HIPERTENSION,RENAL_CRONICA)
+oax_pos
+table(oax_pos$OBESIDAD)
+table(oax_pos$ASMA)
+table(oax_pos$HIPERTENSION)
+table(oax_pos$RENAL_CRONICA)
+
+# i) Edades de casos positivos 
+oax<-select(datos,ENTIDAD,RESULTADO,EDAD)
+oax$ENTIDAD<-as.character(oax$ENTIDAD)
+oax_pos<-filter(oax,
+                ENTIDAD =="Oaxaca"&
+                  RESULTADO == 1)
+oax_pos
+boxplot(oax_pos$EDAD)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+.

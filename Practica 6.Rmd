@@ -1,30 +1,69 @@
 ---
-title: "Practica 6"
+title: "Practica 6 "
 author: "Oswaldo Rodriguez"
-date: '2022-03-29'
-output: html_document
+date: "15-Marzo-2022"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      smooth_scroll: false
+    number_sections: true
+    theme: united 
+    highlight: tango
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Practica 6
+## Cargar base de datos
+```{r}
+data("airquality")
+ data.frame(airquality)
+
+```
+## Muestra la clase la estructura de la base de datos  
+```{r}
+  class(airquality)
+```
+## muestra el tamaño del archivo de la base de datos
+```{r}
+ object.size(airquality)
+```
+## Muestra el resumen de la base de datos  
+```{r}
+ summary(airquality)
+```
+## mostrar los primeros 6 registros
+```{r}
+ head(airquality,6)
+```
+## crea un conjuntp de datos con Ozone, Wind y Temp y sus primeros 6 regirstros
+```{r}
+library(dplyr) 
+newdato1<-select(airquality, Ozone, Wind, Temp)
+ head(newdato1,6)
+```
+## Crea un subconjunto de datos con todas las columnas, excepto Wind y Day. Posteriormente, filtra las radiaciones solares del mes 8 que sean mayores a 200
+
+```{r}
+filter(select(airquality, -Wind, -Day), Month==8, Solar.R>200)
 ```
 
-## R Markdown
+## Muestra la variable Wind y Temp de los días 1, 5 y 10
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+select(filter(airquality, Day %in% c(1, 5, 10)), Wind, Temp)
 ```
 
-## Including Plots
+## Convierte el atributo Temp de grados centígrados a farenheit
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+mutate(airquality, Temp = (Temp * (9/5)) + 32)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Agrupa por días y muestra el resumen de los promedios de los atributos Wind y Temp
+
+```{r}
+summarize(group_by(airquality, Day), promedio_wind = mean(Wind, na.rm = TRUE),
+                     promedio_temp = mean(Temp,na.rm = TRUE))
+```
+
